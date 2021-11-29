@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  wallet:
+    tty: true
+    stdin_open: true
+    build:
+      args:
+        RUBY_VERSION: '2.7.5'
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    container_name: bitcoin_wallet
+    command: ruby wallet.rb
+    restart: unless-stopped
+    volumes:
+      - ../:/app
+      - /app/docker
