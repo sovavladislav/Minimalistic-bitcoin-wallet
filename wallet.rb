@@ -15,7 +15,7 @@ while (command = gets.chomp) != 'exit'
     puts address_storage.address
   when 'balance'
     balance = AddressBalance.new(address_storage.address).get_actual
-    puts balance.to_f
+    puts balance.to_f if balance
   when /send (tb1|[2nm]|bcrt)[a-zA-HJ-NP-Z0-9]{25,40} (\d+(?:\.\d+)?)/
     _, recipient_addr, value = command.split(' ')
     result = Transaction.new(recipient_addr, value).send

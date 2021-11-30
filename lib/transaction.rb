@@ -7,6 +7,8 @@ require_relative 'address_storage'
 class Transaction
   include Bitcoin::Builder
 
+  class UnexpectedError < StandardError; end
+
   DEFAULT_FEE = BigDecimal('0.0001')
   SATOSHI_PER_BITCOIN = BigDecimal(100000000)
 
@@ -16,15 +18,17 @@ class Transaction
   end
 
   def send
-    return false if !validate
+    return unless validate
 
     send_transaction
+  rescue UnexpectedError
+    puts 'Sending transaction error — try again'
   end
 
   private
 
   def actual_balance
-    @actual_balance ||= AddressBalance.new(address_storage.address).get_actual
+    @actual_balance ||= AddressBalance.new(address_storage.address).get_actual || BigDecimal(0)
   end
 
   def address_storage
@@ -61,6 +65,7 @@ class Transaction
   def input_data
     tx_ids.map do |tx_id|
       tx_raw = Esplora.get_raw_transaction(tx_id)
+      raise UnexpectedError if tx_raw.nil?
 
       tempfile = Tempfile.new("transaction_#{tx_id}")
       tempfile << tx_raw
@@ -112,9 +117,10 @@ class Transaction
   end
 
   def tx_ids
-    Esplora
-      .get_utxo(address_storage.address)
-      .map { |transaction| transaction['txid'] }
+    utxo = Esplora.get_utxo(address_storage.address)
+    raise UnexpectedError if utxo.nil?
+
+    utxo.map { |transaction| transaction['txid'] }
   end
 
   def validate
