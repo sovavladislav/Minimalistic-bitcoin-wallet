@@ -1,3 +1,4 @@
+require 'bigdecimal'
 require 'bitcoin'
 require 'tempfile'
 require_relative 'address_balance'
@@ -6,12 +7,12 @@ require_relative 'address_storage'
 class Transaction
   include Bitcoin::Builder
 
-  DEFAULT_FEE = 0.0001
-  SATOSHI_PER_BITCOIN = 100000000.0
+  DEFAULT_FEE = BigDecimal('0.0001')
+  SATOSHI_PER_BITCOIN = BigDecimal(100000000)
 
   def initialize(recipient_addr, value)
     @recipient_addr = recipient_addr
-    @value = value.to_f
+    @value = BigDecimal(value)
   end
 
   def send
