@@ -83,6 +83,7 @@ class AddressStorage
     @address = decrypted_key.addr
   rescue RuntimeError => e
     puts "An error while loading private key - #{e.message}"
+    puts 'Generating new one'
     false
   end
 
