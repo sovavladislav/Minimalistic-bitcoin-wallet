@@ -1,7 +1,8 @@
+require 'bigdecimal'
 require_relative 'esplora'
 
 class AddressBalance
-  SATOSHI_PER_BITCOIN = 100000000.0
+  SATOSHI_PER_BITCOIN = BigDecimal(100000000)
 
   attr_reader :address
 
@@ -16,7 +17,7 @@ class AddressBalance
     chain_sub = substitute(address_information, 'chain_stats')
     mempool_sub = substitute(address_information, 'mempool_stats')
 
-    (chain_sub + mempool_sub) / SATOSHI_PER_BITCOIN
+    BigDecimal(chain_sub + mempool_sub) / SATOSHI_PER_BITCOIN
   end
 
   private
